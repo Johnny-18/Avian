@@ -1,0 +1,17 @@
+﻿<Window x:Class="Avian.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Avian"
+        mc:Ignorable="d"
+        Title="Login" Height="480" Width="342">
+    <Grid Margin="-10,0,0,-6">
+        <Button Content="Log in" HorizontalAlignment="Center" Margin="0,340,0,0" VerticalAlignment="Top" Height="24" Width="64" Click="ButtonLogIn_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="144,130,0,0" Text="company@email.com" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" TextChanged="TextBox_TextEmailChanged"/>
+        <TextBox HorizontalAlignment="Left" Margin="144,182,0,0" Text="****" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" TextChanged="TextBox_TextPasswordChanged"/>
+        <Label Content="Email" HorizontalAlignment="Left" Margin="81,122,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.671,-0.191"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="79,178,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.671,-0.191"/>
+
+    </Grid>
+</Window>
