@@ -1,0 +1,8 @@
+# Ignore everything
+**
+
+# Allow published artifacts only
+!/result/**
+
+# Allow the container init script
+!/.docker/**
