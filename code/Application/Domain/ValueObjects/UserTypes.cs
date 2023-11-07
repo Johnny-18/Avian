@@ -1,6 +1,7 @@
 ﻿namespace Application.Domain.ValueObjects;
 
-public class UserTypes
+public enum UserTypes
 {
-    
+    Regular = 1,
+    Administrator = 2,
 }
