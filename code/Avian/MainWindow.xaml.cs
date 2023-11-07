@@ -1,34 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Linq;
+using Application.Dal;
 
 namespace Avian
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        public MainWindow()
+        private readonly AvianContext _context;
+        
+        public MainWindow(AvianContext context)
         {
             InitializeComponent();
+            _context = context;
+            GetPilots();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void GetPilots()
         {
-            var window = new Login();
-            Close();
+            var pilots = _context.Pilots.ToArray();
+            Pilots.ItemsSource = pilots;
         }
     }
 }

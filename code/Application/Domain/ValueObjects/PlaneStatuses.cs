@@ -1,6 +1,7 @@
 ﻿namespace Application.Domain.ValueObjects;
 
-public class PlaneStatuses
+public enum PlaneStatuses
 {
-    
+    ReadyToFlight = 1,
+    Broken = 2,
 }

@@ -43,6 +43,20 @@
               "target": "Package",
               "version": "[7.0.13, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[7.0.1, )"
@@ -50,6 +64,10 @@
             "Npgsql": {
               "target": "Package",
               "version": "[7.0.6, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
             }
           },
           "imports": [
