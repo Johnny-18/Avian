@@ -12,8 +12,8 @@ public sealed class Flight
         string? comment,
         DateTimeOffset departureDate,
         DateTimeOffset? arrivalDate,
-        City from,
-        City to)
+        string from,
+        string to)
     {
         Id = id;
         PlaneId = planeId;
@@ -34,8 +34,8 @@ public sealed class Flight
         string? comment,
         DateTimeOffset departureDate,
         DateTimeOffset? arrivalDate,
-        City from,
-        City to)
+        string from,
+        string to)
     {
         if (from == to)
         {
@@ -59,9 +59,7 @@ public sealed class Flight
     
     public DateTimeOffset? ArrivalDate { get; }
     
-    public City From { get; }
+    public string From { get; }
     
-    public City To { get; }
+    public string To { get; }
 }
-
-public sealed record City(string Name);

@@ -1,6 +1,6 @@
 ﻿namespace Avian.Domain.ValueObjects;
 
-public enum TicketType
+public enum TicketTypes
 {
     Economical = 1,
     Standard = 2,

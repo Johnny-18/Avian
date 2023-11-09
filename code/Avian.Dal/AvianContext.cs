@@ -10,6 +10,11 @@ public sealed class AvianContext : DbContext
     {
     }
 
+    // public AvianContext()
+    // {
+    //     
+    // }
+    //
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     // {
     //     optionsBuilder.UseNpgsql("Host=localhost; Database=avian; Username=postgres; Password=1Password!");
@@ -77,7 +82,7 @@ public sealed class AvianContext : DbContext
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Property(x => x.Price);
-            builder.Property(x => x.Type);
+            builder.Property(x => x.Types);
             builder.Property(x => x.SeatNumber);
             builder.Property(x => x.PlaneId);
             builder.Property(x => x.UserId);
@@ -90,6 +95,7 @@ public sealed class AvianContext : DbContext
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Property(x => x.Email);
             builder.Property(x => x.PasswordHash);
+            builder.Property(x => x.Type);
         });
     }
 }
