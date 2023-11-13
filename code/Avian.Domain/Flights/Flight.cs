@@ -4,7 +4,7 @@ namespace Avian.Domain.Flights;
 
 public sealed class Flight
 {
-    private Flight(
+    public Flight(
         Guid id,
         Guid planeId,
         Guid[] pilots,
@@ -24,25 +24,6 @@ public sealed class Flight
         ArrivalDate = arrivalDate;
         From = from;
         To = to;
-    }
-
-    public static Flight Create(
-        Guid id,
-        Guid planeId,
-        Guid[] pilots,
-        FlightStatuses status,
-        string? comment,
-        DateTimeOffset departureDate,
-        DateTimeOffset? arrivalDate,
-        string from,
-        string to)
-    {
-        if (from == to)
-        {
-            throw new DomainException("cities_is_equal", "The city of departure cannot be the city of arrival");
-        }
-        
-        return new Flight(id, planeId, pilots, status, comment, departureDate, arrivalDate, from, to);
     }
 
     public Guid Id { get; }

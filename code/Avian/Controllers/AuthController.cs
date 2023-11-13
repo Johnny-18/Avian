@@ -1,8 +1,6 @@
-﻿using Avian.Application.Queries;
-using Avian.Application.Services;
+﻿using Avian.Application.Services;
+using Avian.Domain.Users;
 using Avian.Dtos;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Avian.Controllers;
@@ -11,46 +9,27 @@ namespace Avian.Controllers;
 [Route("api/v1/auth")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-    private readonly IMediator _mediator;
     private readonly IAuthService _authService;
+    private readonly IUserService _userService;
 
-    public AuthController(IConfiguration configuration, IMediator mediator, IAuthService authService)
+    public AuthController(IAuthService authService, IUserService userService)
     {
-        _configuration = configuration;
-        _mediator = mediator;
         _authService = authService;
+        _userService = userService;
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(typeof(User), 200)]
     [ProducesResponseType(404)]
     public async Task<IActionResult> Login([FromBody] LoginDto login, CancellationToken cancellationToken)
     {
-        var request = new GetUserQuery
-        {
-            Email = login.Email,
-            Password = login.Password,
-        };
-
-        var user = await _mediator.Send(request, cancellationToken);
+        var user = await _userService.GetUser(login.Email, login.Password, cancellationToken);
         if (user is null)
         {
-            return NotFound();
+            return NotFound("User not found");
         }
 
         var token = _authService.GenerateToken(user);
         return Ok(token);
-    }
-    
-    public async Task<IActionResult> Register()
-    {
-        return Ok();
-    }
-
-    [Authorize]
-    public async Task<IActionResult> Logout()
-    {
-        return Ok();
     }
 }

@@ -1,7 +1,6 @@
-using System.Windows.Input;
+using Avian.Application.Generators;
 using Avian.Application.Services;
 using Avian.Dal;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Avian.Extensions;
@@ -13,24 +12,18 @@ internal static class ServiceCollectionExtensions
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-        services.AddDbContext<AvianContext>((sp, options) =>
+        services.AddDbContext<AvianContext>((_, options) =>
         {
             var connectionString = configuration.GetConnectionString("Avian");
 
             options.UseNpgsql(connectionString);
         });
 
+        services.AddSingleton<HashGenerator>();
+        
         services.AddTransient<IAuthService, AuthService>();
-
-        return services;
-    }
-    
-    internal static IServiceCollection AddApplication(this IServiceCollection services)
-    {
-        services.AddMediatR(options =>
-        {
-            options.RegisterServicesFromAssemblyContaining<ICommand>();
-        });
+        services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IFlightService, FlightService>();
 
         return services;
     }
