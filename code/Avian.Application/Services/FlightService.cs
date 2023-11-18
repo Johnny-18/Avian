@@ -1,6 +1,7 @@
 ﻿using Avian.Dal;
 using Avian.Dal.Entities;
 using Avian.Domain.Flights;
+using Avian.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Avian.Application.Services;
@@ -9,6 +10,15 @@ public interface IFlightService
 {
     Task<Flight?> GetFlightByIdAsync(Guid flightId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<Flight>> GetFlightsAsync(CancellationToken cancellationToken);
+    Task<Flight> CreateAsync(
+        Guid planeId,
+        Guid[] pilotIds,
+        FlightStatuses status,
+        DateTimeOffset departureDate,
+        DateTimeOffset? arrivalDate,
+        string from,
+        string to,
+        CancellationToken cancellationToken);
 }
 
 public sealed class FlightService : IFlightService
@@ -40,6 +50,36 @@ public sealed class FlightService : IFlightService
             .ToArrayAsync(cancellationToken);
 
         return dals.Select(ToDomain).ToArray();
+    }
+
+    public async Task<Flight> CreateAsync(
+        Guid planeId,
+        Guid[] pilotIds,
+        FlightStatuses status,
+        DateTimeOffset departureDate,
+        DateTimeOffset? arrivalDate,
+        string from,
+        string to,
+        CancellationToken cancellationToken)
+    {
+        var flightDal = new FlightDal
+        {
+            Id = Guid.NewGuid(),
+            PlaneId = planeId,
+            Pilots = pilotIds,
+            Status = status,
+            Comment = null,
+            DepartureDate = departureDate,
+            ArrivalDate = arrivalDate,
+            From = from,
+            To = to,
+        };
+
+        await _context.Flights.AddAsync(flightDal, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return ToDomain(flightDal);
     }
 
     private static Flight ToDomain(FlightDal dal) =>

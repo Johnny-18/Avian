@@ -7,4 +7,5 @@ public enum FlightStatuses
     Active = 3,
     Arrived = 4,
     Completed = 5,
+    Canceled = 6,
 }

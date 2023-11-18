@@ -1,6 +1,7 @@
 ﻿using Avian.Application.Services;
 using Avian.Domain.Users;
 using Avian.Dtos;
+using Avian.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Avian.Controllers;

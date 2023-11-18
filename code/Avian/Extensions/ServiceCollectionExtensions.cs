@@ -24,6 +24,8 @@ internal static class ServiceCollectionExtensions
         services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IFlightService, FlightService>();
+        services.AddTransient<IPilotService, PilotService>();
+        services.AddTransient<IPlaneService, PlaneService>();
 
         return services;
     }
