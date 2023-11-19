@@ -58,28 +58,35 @@ public sealed class FlightController : ControllerBase
     [ProducesResponseType(typeof(FlightDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
-    public async Task<ActionResult> CreateAsync([FromBody] CreateFlightDto flight, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateAsync([FromBody][Required] CreateFlightDto flight, CancellationToken cancellationToken)
     {
-        if (flight.Status is FlightStatuses.Canceled or FlightStatuses.Completed)
+        try
         {
-            return BadRequest("Invalid status for flight!");
-        }
+            if (flight.Status is FlightStatuses.Canceled or FlightStatuses.Completed)
+            {
+                return BadRequest("Invalid status for flight!");
+            }
 
-        if (flight.ArrivalDate is not null && flight.DepartureDate > flight.ArrivalDate)
+            if (flight.ArrivalDate is not null && flight.DepartureDate > flight.ArrivalDate)
+            {
+                return BadRequest("Invalid dates!");
+            }
+
+            var created = await _flightService.CreateAsync(
+                flight.PlaneId,
+                flight.Pilots,
+                flight.Status,
+                flight.DepartureDate,
+                flight.ArrivalDate,
+                flight.From,
+                flight.To,
+                cancellationToken);
+
+            return Ok(FlightDto.FromDomain(created));
+        }
+        catch (ApplicationException e)
         {
-            return BadRequest("Invalid dates!");
+            return BadRequest(e.Message);
         }
-
-        var created = await _flightService.CreateAsync(
-            flight.PlaneId,
-            flight.Pilots,
-            flight.Status,
-            flight.DepartureDate,
-            flight.ArrivalDate,
-            flight.From,
-            flight.To,
-            cancellationToken);
-
-        return Ok(FlightDto.FromDomain(created));
     }
 }

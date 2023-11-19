@@ -11,7 +11,6 @@ public sealed class CreateFlightDto
     public Guid PlaneId { get; set; }
 
     [Required]
-    [MinLength(1)]
     [JsonPropertyName("pilots")]
     public Guid[] Pilots { get; set; } = null!;
 
