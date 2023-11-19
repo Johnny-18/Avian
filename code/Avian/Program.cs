@@ -1,11 +1,11 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Avian.Dal;
 using Avian.Extensions;
 using Avian.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +23,12 @@ builder.Services
         options.SuppressMapClientErrors = true;
         options.SuppressModelStateInvalidFilter = true;
     })
-    .AddNewtonsoftJson(options =>
+    .AddJsonOptions(options =>
     {
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        var snakeCase = new SnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(snakeCase));
+        options.JsonSerializerOptions.PropertyNamingPolicy = snakeCase;
     });
 
 builder.Services.AddInfrastructure();

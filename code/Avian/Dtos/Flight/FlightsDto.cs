@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Avian.Dtos;
+namespace Avian.Dtos.Flight;
 
 public sealed class FlightsDto
 {
