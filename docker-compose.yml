@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:13.5
+    ports:
+        - "5432:5432"
+    environment:
+      POSTGRES_DB: avian
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1Password!
+    command: postgres --max_prepared_transactions=10
