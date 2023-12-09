@@ -6,9 +6,9 @@ public class FlightDal
 {
     public Guid Id { get; set; }
     
-    public Guid PlaneId { get; set; }
+    public Guid? PlaneId { get; set; }
     
-    public Guid[] Pilots { get; set; } = null!;
+    public Guid[]? Pilots { get; set; } = null!;
 
     public FlightStatuses Status { get; set; }
     

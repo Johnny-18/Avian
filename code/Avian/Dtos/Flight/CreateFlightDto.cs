@@ -6,17 +6,14 @@ namespace Avian.Dtos.Flight;
 
 public sealed class CreateFlightDto
 {
-    [Required]
     [JsonPropertyName("plane_id")]
-    public Guid PlaneId { get; set; }
+    public Guid? PlaneId { get; set; }
 
-    [Required]
     [JsonPropertyName("pilots")]
-    public Guid[] Pilots { get; set; } = null!;
-
-    [Required]
+    public Guid[]? Pilots { get; set; }
+    
     [JsonPropertyName("status")]
-    public FlightStatuses Status { get; set; }
+    public FlightStatuses Status { get; set; } = FlightStatuses.Planned;
     
     [Required]
     [JsonPropertyName("departure_date")]

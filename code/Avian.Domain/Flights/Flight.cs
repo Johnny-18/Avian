@@ -6,8 +6,8 @@ public sealed class Flight
 {
     public Flight(
         Guid id,
-        Guid planeId,
-        Guid[] pilots,
+        Guid? planeId,
+        Guid[]? pilots,
         FlightStatuses status,
         string? comment,
         DateTimeOffset departureDate,
@@ -28,9 +28,9 @@ public sealed class Flight
 
     public Guid Id { get; }
     
-    public Guid PlaneId { get; }
+    public Guid? PlaneId { get; }
     
-    public Guid[] Pilots { get; }
+    public Guid[]? Pilots { get; }
 
     public FlightStatuses Status { get; }
     

@@ -9,15 +9,12 @@ public sealed class FlightDto
     [Required]
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
-    
-    [Required]
-    [JsonPropertyName("plane_id")]
-    public Guid PlaneId { get; set; }
 
-    [Required]
-    [MinLength(1)]
+    [JsonPropertyName("plane_id")]
+    public Guid? PlaneId { get; set; }
+
     [JsonPropertyName("pilots")]
-    public Guid[] Pilots { get; set; } = null!;
+    public Guid[]? Pilots { get; set; }
 
     [Required]
     [JsonPropertyName("status")]

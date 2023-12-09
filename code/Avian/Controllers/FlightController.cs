@@ -62,16 +62,6 @@ public sealed class FlightController : ControllerBase
     {
         try
         {
-            if (flight.Status is FlightStatuses.Canceled or FlightStatuses.Completed)
-            {
-                return BadRequest("Invalid status for flight!");
-            }
-
-            if (flight.ArrivalDate is not null && flight.DepartureDate > flight.ArrivalDate)
-            {
-                return BadRequest("Invalid dates!");
-            }
-
             var created = await _flightService.CreateAsync(
                 flight.PlaneId,
                 flight.Pilots,

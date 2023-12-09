@@ -11,8 +11,8 @@ public interface IFlightService
     Task<Flight?> GetFlightByIdAsync(Guid flightId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<Flight>> GetFlightsAsync(CancellationToken cancellationToken);
     Task<Flight> CreateAsync(
-        Guid planeId,
-        Guid[] pilotIds,
+        Guid? planeId,
+        Guid[]? pilotIds,
         FlightStatuses status,
         DateTimeOffset departureDate,
         DateTimeOffset? arrivalDate,
@@ -53,8 +53,8 @@ public sealed class FlightService : IFlightService
     }
 
     public async Task<Flight> CreateAsync(
-        Guid planeId,
-        Guid[] pilotIds,
+        Guid? planeId,
+        Guid[]? pilotIds,
         FlightStatuses status,
         DateTimeOffset departureDate,
         DateTimeOffset? arrivalDate,
@@ -62,25 +62,8 @@ public sealed class FlightService : IFlightService
         string to,
         CancellationToken cancellationToken)
     {
-        ValidateCreation(status, departureDate, arrivalDate, from, to, pilotIds);
-        
-        var planeDal = await _context.Planes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == planeId, cancellationToken);
-        if (planeDal is null)
-        {
-            throw new ApplicationException("Plane not found! Invalid id");
-        }
+        await ValidateCreation(status, departureDate, arrivalDate, from, to, pilotIds, planeId, cancellationToken);
 
-        var countPilots = await _context.Pilots
-            .AsNoTracking()
-            .Where(x => pilotIds.Contains(x.Id))
-            .CountAsync(cancellationToken: cancellationToken);
-        if (countPilots != pilotIds.Length)
-        {
-            throw new ApplicationException("Pilots not found! Invalid ids");
-        }
-        
         var flightDal = new FlightDal
         {
             Id = Guid.NewGuid(),
@@ -94,25 +77,30 @@ public sealed class FlightService : IFlightService
             To = to,
         };
 
-        await _context.Flights.AddAsync(flightDal, cancellationToken);
-
+        _context.Flights.Add(flightDal);
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToDomain(flightDal);
     }
 
-    private void ValidateCreation(
+    private async Task ValidateCreation(
         FlightStatuses status,
         DateTimeOffset departureDate,
         DateTimeOffset? arrivalDate,
         string from,
         string to,
-        IReadOnlyCollection<Guid> pilotIds)
+        Guid[]? pilotIds,
+        Guid? planeId,
+        CancellationToken cancellationToken)
     {
-        pilotIds = pilotIds.Distinct().ToArray();
-        if (!pilotIds.Any() || pilotIds.Count > 3)
+        if (pilotIds is not null)
         {
-            throw new ApplicationException("Invalid count of pilots!");
+            await ValidatePilots(pilotIds, cancellationToken);
+        }
+                
+        if (planeId is not null)
+        {
+            await ValidatePlane(planeId.Value, cancellationToken);
         }
         
         if (status is FlightStatuses.Canceled or FlightStatuses.Completed)
@@ -133,6 +121,35 @@ public sealed class FlightService : IFlightService
         if (from == to || string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
         {
             throw new ApplicationException("Invalid cities!");
+        }
+    }
+
+    private async Task ValidatePlane(Guid planeId, CancellationToken cancellationToken)
+    {
+        var planeDal = await _context.Planes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == planeId, cancellationToken);
+        if (planeDal is null)
+        {
+            throw new ApplicationException("Plane not found! Invalid id");
+        }
+    }
+
+    private async Task ValidatePilots(Guid[] pilotIds, CancellationToken cancellationToken)
+    {
+        pilotIds = pilotIds.Distinct().ToArray();
+        if (pilotIds.Length > 3)
+        {
+            throw new ApplicationException("Invalid count of pilots!");
+        }
+        
+        var countPilots = await _context.Pilots
+            .AsNoTracking()
+            .Where(x => pilotIds.Contains(x.Id))
+            .CountAsync(cancellationToken: cancellationToken);
+        if (countPilots != pilotIds.Length)
+        {
+            throw new ApplicationException("Pilots not found! Invalid ids");
         }
     }
 

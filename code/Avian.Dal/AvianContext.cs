@@ -40,8 +40,8 @@ public sealed class AvianContext : DbContext
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
-            builder.Property(x => x.PlaneId);
-            builder.Property(x => x.Pilots);
+            builder.Property(x => x.PlaneId).IsRequired(false);
+            builder.Property(x => x.Pilots).IsRequired(false);
             builder.Property(x => x.From);
             builder.Property(x => x.To);
             builder.Property(x => x.Status);
@@ -82,7 +82,7 @@ public sealed class AvianContext : DbContext
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Property(x => x.Price);
-            builder.Property(x => x.Types);
+            builder.Property(x => x.Type);
             builder.Property(x => x.SeatNumber);
             builder.Property(x => x.PlaneId);
             builder.Property(x => x.UserId);
@@ -91,8 +91,7 @@ public sealed class AvianContext : DbContext
         modelBuilder.Entity<UserDal>().ToTable("users");
         modelBuilder.Entity<UserDal>(builder =>
         {
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.HasKey(x => x.Email);
             builder.Property(x => x.Email);
             builder.Property(x => x.PasswordHash);
             builder.Property(x => x.Type);

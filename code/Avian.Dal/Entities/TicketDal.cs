@@ -10,7 +10,7 @@ public class TicketDal
     
     public decimal Price { get; set; }
     
-    public TicketTypes Types { get; set; }
+    public TicketTypes Type { get; set; }
     
     public Guid? UserId { get; set; }
     
