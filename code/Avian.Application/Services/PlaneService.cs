@@ -11,6 +11,7 @@ public interface IPlaneService
     Task<Plane?> GetAsync(Guid id, CancellationToken cancellationToken);
     Task<Plane[]> GetAllAsync(CancellationToken cancellationToken);
     Task<Plane> CreateAsync(string name, PlaneStatuses status, CancellationToken cancellationToken);
+    Task<Plane?> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
 public sealed class PlaneService : IPlaneService
@@ -54,6 +55,22 @@ public sealed class PlaneService : IPlaneService
         };
 
         await _context.Planes.AddAsync(planeDal, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return ToDomain(planeDal);
+    }
+
+    public async Task<Plane?> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var planeDal = await _context.Planes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (planeDal is null)
+        {
+            return null;
+        }
+
+        _context.Planes.Remove(planeDal);
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToDomain(planeDal);

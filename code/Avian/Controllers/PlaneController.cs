@@ -65,4 +65,19 @@ public sealed class PlaneController : ControllerBase
 
         return Ok(PlaneDto.FromDomain(created));
     }
+    
+    [HttpDelete("{id:guid:required}")]
+    [ProducesResponseType(typeof(PlaneDto), 200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var created = await _planeService.DeleteAsync(id, cancellationToken);
+        if (created is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(PlaneDto.FromDomain(created));
+    }
 }

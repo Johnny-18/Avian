@@ -10,6 +10,7 @@ public interface IPilotService
     Task<Pilot?> GetAsync(Guid id, CancellationToken cancellationToken);
     Task<Pilot[]> GetAllAsync(CancellationToken cancellationToken);
     Task<Pilot> CreateAsync(string name, string qualification, CancellationToken cancellationToken);
+    Task<Pilot?> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
 public sealed class PilotService : IPilotService
@@ -51,6 +52,22 @@ public sealed class PilotService : IPilotService
         };
 
         await _context.Pilots.AddAsync(pilotDal, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return ToDomain(pilotDal);
+    }
+
+    public async Task<Pilot?> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var pilotDal = await _context.Pilots
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (pilotDal is null)
+        {
+            return null;
+        }
+
+        _context.Pilots.Remove(pilotDal);
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToDomain(pilotDal);

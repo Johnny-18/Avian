@@ -66,4 +66,19 @@ public sealed class PilotController : ControllerBase
 
         return Ok(PilotDto.FromDomain(created));
     }
+    
+    [HttpDelete("{id:guid:required}")]
+    [ProducesResponseType(typeof(PilotDto), 200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var created = await _pilotService.DeleteAsync(id, cancellationToken);
+        if (created is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(PilotDto.FromDomain(created));
+    }
 }

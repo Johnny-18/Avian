@@ -19,6 +19,8 @@ public interface IFlightService
         string from,
         string to,
         CancellationToken cancellationToken);
+    Task<Flight?> ChangeAsync(Guid flightId, FlightStatuses? status, string? comment, CancellationToken cancellationToken);
+    Task<Flight?> DeleteAsync(Guid flightId, CancellationToken cancellationToken);
 }
 
 public sealed class FlightService : IFlightService
@@ -78,6 +80,53 @@ public sealed class FlightService : IFlightService
         };
 
         _context.Flights.Add(flightDal);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return ToDomain(flightDal);
+    }
+
+    public async Task<Flight?> ChangeAsync(Guid flightId, FlightStatuses? status, string? comment, CancellationToken cancellationToken)
+    {
+        if (status is null && comment is null)
+        {
+            throw new ApplicationException("Invalid request on change");
+        }
+
+        var flightDal = await _context.Flights
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == flightId, cancellationToken);
+        if (flightDal is null)
+        {
+            return null;
+        }
+
+        if (status is not null)
+        {
+            flightDal.Status = status.Value;
+        }
+
+        if (!string.IsNullOrWhiteSpace(comment))
+        {
+            flightDal.Comment = comment;
+        }
+
+        _context.Flights.Update(flightDal);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return ToDomain(flightDal);
+    }
+
+    public async Task<Flight?> DeleteAsync(Guid flightId, CancellationToken cancellationToken)
+    {
+        var flightDal = await _context.Flights
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == flightId, cancellationToken);
+        if (flightDal is null)
+        {
+            return null;
+        }
+
+        _context.Flights.Remove(flightDal);
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToDomain(flightDal);
