@@ -30,7 +30,7 @@ public sealed class AuthService : IAuthService
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier,user.Email),
-            new Claim(ClaimTypes.Role,user.Role)
+            new Claim(ClaimTypes.Role, user.RoleToString)
         };
         var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
             _configuration["Jwt:Audience"],

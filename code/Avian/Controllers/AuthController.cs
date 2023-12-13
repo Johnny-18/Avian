@@ -1,5 +1,4 @@
 ﻿using Avian.Application.Services;
-using Avian.Domain.Users;
 using Avian.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,11 +18,11 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(typeof(string), 200)]
     [ProducesResponseType(404)]
     public async Task<IActionResult> Login([FromBody] LoginDto login, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetUser(login.Email, login.Password, cancellationToken);
+        var user = await _userService.LoginAsync(login.Email, login.Password, cancellationToken);
         if (user is null)
         {
             return NotFound("User not found");
@@ -36,12 +35,12 @@ public sealed class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(typeof(string), 200)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> Register([FromBody] RegisterDto register, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register([FromBody] CreateUserDto register, CancellationToken cancellationToken)
     {
-        var user = await _userService.Register(register.Email, register.Password, register.Role, cancellationToken);
+        var user = await _userService.RegisterAsync(register.Email, register.Password, register.Role, cancellationToken);
         if (user is null)
         {
-            return NotFound("User not found");
+            return NotFound("User registered with the same email");
         }
 
         var token = _authService.GenerateToken(user);

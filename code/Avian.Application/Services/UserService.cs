@@ -9,8 +9,10 @@ namespace Avian.Application.Services;
 
 public interface IUserService
 {
-    Task<User?> GetUser(string email, string password, CancellationToken cancellationToken);
-    Task<User?> Register(string email, string password, UserTypes type, CancellationToken cancellationToken);
+    Task<User?> LoginAsync(string email, string password, CancellationToken cancellationToken);
+    Task<User?> GetAsync(string email, CancellationToken cancellationToken);
+    Task<User[]> GetAllAsync(CancellationToken cancellationToken);
+    Task<User?> RegisterAsync(string email, string password, UserTypes type, CancellationToken cancellationToken);
 }
 
 public sealed class UserService : IUserService
@@ -24,33 +26,45 @@ public sealed class UserService : IUserService
         _hashGenerator = hashGenerator;
     }
     
-    public async Task<User?> GetUser(string email, string password, CancellationToken cancellationToken)
+    public async Task<User?> LoginAsync(string email, string password, CancellationToken cancellationToken)
     {
-        var userFromDal = await _context.Users
+        var userDal = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
-        if (userFromDal is null)
+        if (userDal is null)
         {
             return null;
         }
 
         var inputPasswordHash = _hashGenerator.GenerateHash(password);
-        if (inputPasswordHash != userFromDal.PasswordHash)
+        if (inputPasswordHash != userDal.PasswordHash)
+        {
+            return null;
+        }
+        return new User(userDal.Email, userDal.PasswordHash, userDal.Type);
+    }
+
+    public async Task<User?> GetAsync(string email, CancellationToken cancellationToken)
+    {
+        var userDal = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+        if (userDal is null)
         {
             return null;
         }
 
-        var role = userFromDal.Type switch
-        {
-            UserTypes.Regular => "regular",
-            UserTypes.Administrator => "administrator",
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        return new User(userFromDal.Email, userFromDal.PasswordHash, role);
+        return new User(userDal.Email, userDal.PasswordHash, userDal.Type);
     }
 
-    public async Task<User?> Register(string email, string password, UserTypes type, CancellationToken cancellationToken)
+    public async Task<User[]> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var usersDal = await _context.Users.AsNoTracking().ToArrayAsync(cancellationToken);
+
+        return usersDal.Select(x => new User(x.Email, x.PasswordHash, x.Type)).ToArray();
+    }
+
+    public async Task<User?> RegisterAsync(string email, string password, UserTypes type, CancellationToken cancellationToken)
     {
         var existUser = await _context.Users
             .AsNoTracking()
@@ -70,13 +84,7 @@ public sealed class UserService : IUserService
 
         _context.Users.Add(userDal);
         await _context.SaveChangesAsync(cancellationToken);
-        
-        var role = userDal.Type switch
-        {
-            UserTypes.Regular => "regular",
-            UserTypes.Administrator => "administrator",
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        return new User(userDal.Email, userDal.PasswordHash, role);
+
+        return new User(userDal.Email, userDal.PasswordHash, userDal.Type);
     }
 }
